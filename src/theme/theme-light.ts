@@ -9,8 +9,6 @@ const themeLight: DefaultTheme = {
     squareSelected: "#e1ffb5",
     squareBlocked: "black",
   },
-
-  squareSize: 20,
 };
 
 export { themeLight };

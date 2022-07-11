@@ -1,15 +1,15 @@
 import CrosswordGrid from "./components/CrosswordGrid";
 
-function getEmptryGrid(width: number, height: number): (string | null)[][] {
-  return Array.from(Array(width)).map((_) =>
-    Array.from(Array(height)).map((_) =>
+function getEmptyGrid(size: number): (string | null)[][] {
+  return Array.from(Array(size)).map((_) =>
+    Array.from(Array(size)).map((_) =>
       String.fromCharCode(65 + Math.floor(Math.random() * 26))
     )
   );
 }
 
 function App() {
-  const contents = getEmptryGrid(20, 20);
+  const contents = getEmptyGrid(20);
   contents[4][0] = null;
   contents[4][1] = null;
   contents[4][2] = null;

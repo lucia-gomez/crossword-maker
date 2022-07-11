@@ -1,13 +1,12 @@
 import styled, { useTheme } from "styled-components";
 
 interface SquareStyleProps {
-  numSquareWidth: number;
-  numSquareHeight: number;
+  numSquares: number;
   bgColor: string;
 }
 
 const numberOfFirstCellLastRow = (props: SquareStyleProps) =>
-  props.numSquareWidth * (props.numSquareHeight - 1) + 1;
+  props.numSquares * (props.numSquares - 1) + 1;
 
 const Square = styled.div<SquareStyleProps>`
   border-bottom: 1px solid ${(props) => props.theme.colors.squareBorder};
@@ -18,7 +17,7 @@ const Square = styled.div<SquareStyleProps>`
   align-items: center;
 
   // square in last column
-  :nth-child(${(props) => props.numSquareWidth}n) {
+  :nth-child(${(props) => props.numSquares}n) {
     border-right: none;
   }
 
@@ -26,11 +25,16 @@ const Square = styled.div<SquareStyleProps>`
   :nth-child(n + ${numberOfFirstCellLastRow}) {
     border-bottom: none;
   }
+
+  ::before {
+    content: "";
+    display: block;
+    padding-top: 100%;
+  }
 `;
 
 interface Props {
-  numSquareWidth: number;
-  numSquareHeight: number;
+  numSquares: number;
   content: string | null;
   rowIndex: number;
   colIndex: number;
@@ -45,8 +49,7 @@ export default function CrosswordGridSquare(props: Props) {
     isSelectedSquare,
     rowIndex,
     colIndex,
-    numSquareWidth,
-    numSquareHeight,
+    numSquares,
   } = props;
   const theme = useTheme();
 
@@ -66,11 +69,7 @@ export default function CrosswordGridSquare(props: Props) {
   };
 
   return (
-    <Square
-      bgColor={getBgColor()}
-      onClick={onClickSquare}
-      {...{ numSquareHeight, numSquareWidth }}
-    >
+    <Square bgColor={getBgColor()} onClick={onClickSquare} {...{ numSquares }}>
       {content}
     </Square>
   );

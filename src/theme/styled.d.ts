@@ -10,7 +10,5 @@ declare module "styled-components" {
       squareSelected: string;
       squareBlocked: string;
     };
-
-    squareSize: number;
   }
 }
