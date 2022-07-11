@@ -43,12 +43,18 @@ interface Props {
   colIndex: number;
   isSelectedSquare: boolean;
   onSelect: (row: number, col: number) => void;
+  updateSquareContent: (
+    row: number,
+    col: number,
+    content: string | null
+  ) => void;
 }
 
 export default function CrosswordGridSquare(props: Props) {
   const {
     squareData,
     onSelect,
+    updateSquareContent,
     isSelectedSquare,
     rowIndex,
     colIndex,
@@ -71,8 +77,18 @@ export default function CrosswordGridSquare(props: Props) {
     }
   };
 
+  const onDoubleClickSquare = () => {
+    const newContent = squareData.content === null ? "" : null;
+    updateSquareContent(rowIndex, colIndex, newContent);
+  };
+
   return (
-    <Square bgColor={getBgColor()} onClick={onClickSquare} {...{ numSquares }}>
+    <Square
+      bgColor={getBgColor()}
+      onClick={onClickSquare}
+      onDoubleClick={onDoubleClickSquare}
+      {...{ numSquares }}
+    >
       <SquareNumber viewBox="0 0 50 15" width="100%" height="30%">
         <text x="2" y="2" dominantBaseline="hanging">
           {squareData.number}

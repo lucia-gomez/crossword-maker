@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
 import { SquareData } from "../types/types";
+import numberGrid from "../util/numberGrid";
 import CrosswordGridSquare from "./CrosswordGridSquare";
 
 interface GridStyleProps {
@@ -22,7 +23,8 @@ interface Props {
   contents: SquareData[][];
 }
 
-export default function CrosswordGrid({ contents }: Props) {
+export default function CrosswordGrid(props: Props) {
+  const [contents, setContents] = useState(numberGrid(props.contents));
   const [isHorizontal, setHorizontal] = useState(true);
   const [selectedIndex, setSelectedIndex] = useState<[number, number]>();
   const numSquares = contents.length;
@@ -34,25 +36,22 @@ export default function CrosswordGrid({ contents }: Props) {
     return row === selectedIndex[0] && col === selectedIndex[1];
   };
 
-  const isSelectedClue = (row: number, col: number): boolean => {
-    if (selectedIndex === undefined) {
-      return false;
-    }
-    return false;
-
-    // let r: number = selectedIndex[0];
-    // let c: number = selectedIndex[1];
-    // const selectedClueIndices = [];
-    // if (isHorizontal) {
-    //   // go left from selection
-    //   while (c >= 0 && contents[r]) {
-
-    //   }
-    // }
-  };
-
   const onSelectSquare = (row: number, col: number) => {
     setSelectedIndex([row, col]);
+  };
+
+  const updateSquareContent = (
+    row: number,
+    col: number,
+    content: string | null
+  ) => {
+    let copy = [...contents];
+    copy[row][col].content = content;
+    if (content === null || contents[row][col] === null) {
+      setContents(numberGrid(copy));
+    } else {
+      setContents(copy);
+    }
   };
 
   return (
@@ -66,7 +65,7 @@ export default function CrosswordGrid({ contents }: Props) {
             isSelectedSquare={isSelectedSquare(row, col)}
             onSelect={onSelectSquare}
             key={`${row} ${col}`}
-            {...{ numSquares }}
+            {...{ numSquares, updateSquareContent }}
           />
         ))
       )}
