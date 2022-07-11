@@ -1,25 +1,33 @@
 import CrosswordGrid from "./components/CrosswordGrid";
+import { GridData } from "./types/types";
 
-function getEmptyGrid(size: number): (string | null)[][] {
+function getEmptyGrid(size: number): GridData {
   return Array.from(Array(size)).map((_) =>
-    Array.from(Array(size)).map((_) =>
-      String.fromCharCode(65 + Math.floor(Math.random() * 26))
-    )
+    Array.from(Array(size)).map((_) => ({
+      content: String.fromCharCode(65 + Math.floor(Math.random() * 26)),
+      isSpecial: false,
+      number: 10,
+    }))
   );
 }
 
-function App() {
-  const contents = getEmptyGrid(20);
-  contents[4][0] = null;
-  contents[4][1] = null;
-  contents[4][2] = null;
-  contents[5][0] = null;
-  contents[6][0] = null;
+function numberGrid(contents: GridData): GridData {
+  return contents;
+}
 
-  contents[12][12] = null;
-  contents[11][12] = null;
-  contents[12][13] = null;
-  contents[11][13] = null;
+function App() {
+  let contents = getEmptyGrid(10);
+  contents[4][0].content = null;
+  contents[4][1].content = null;
+  contents[4][2].content = null;
+  contents[5][0].content = null;
+  contents[6][0].content = null;
+
+  // contents[12][12].content = null;
+  // contents[11][12].content = null;
+  // contents[12][13].content = null;
+  // contents[11][13].content = null;
+  contents = numberGrid(contents);
   return <CrosswordGrid contents={contents} />;
 }
 

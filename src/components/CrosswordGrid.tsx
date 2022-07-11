@@ -1,5 +1,6 @@
 import { useState } from "react";
 import styled from "styled-components";
+import { SquareData } from "../types/types";
 import CrosswordGridSquare from "./CrosswordGridSquare";
 
 interface GridStyleProps {
@@ -9,6 +10,7 @@ interface GridStyleProps {
 const Grid = styled.div<GridStyleProps>`
   margin: 20px;
   width: 90vmin;
+  height: 90vmin;
   border: 2px solid ${(props) => props.theme.colors.gridBorder};
   display: grid;
   grid-template:
@@ -17,7 +19,7 @@ const Grid = styled.div<GridStyleProps>`
 `;
 
 interface Props {
-  contents: (string | null)[][];
+  contents: SquareData[][];
 }
 
 export default function CrosswordGrid({ contents }: Props) {
@@ -60,7 +62,7 @@ export default function CrosswordGrid({ contents }: Props) {
           <CrosswordGridSquare
             rowIndex={row}
             colIndex={col}
-            content={contents[row][col]}
+            squareData={contents[row][col]}
             isSelectedSquare={isSelectedSquare(row, col)}
             onSelect={onSelectSquare}
             key={`${row} ${col}`}
