@@ -8,4 +8,8 @@ export type GridData = SquareData[][];
 
 export type ClueData = {
   [key: string]: [number, number][];
-}
+};
+
+export type SquareToCluesData = {
+  [key: string]: string[];
+};

@@ -9,6 +9,7 @@ declare module "styled-components" {
       squareBorder: string;
       squareSelected: string;
       squareBlocked: string;
+      clueSelected: string;
     };
   }
 }

@@ -6,8 +6,9 @@ const themeLight: DefaultTheme = {
     text: "black",
     gridBorder: "black",
     squareBorder: "#595959",
-    squareSelected: "#e1ffb5",
+    squareSelected: "#96f25c",
     squareBlocked: "black",
+    clueSelected: "#d7fcc0",
   },
 };
 

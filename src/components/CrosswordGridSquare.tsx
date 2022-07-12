@@ -42,6 +42,7 @@ interface Props {
   rowIndex: number;
   colIndex: number;
   isSelectedSquare: boolean;
+  isSelectedClue: boolean;
   onSelect: (row: number, col: number) => void;
   onUpdateSquare: (row: number, col: number, content: string | null) => void;
 }
@@ -52,6 +53,7 @@ export default function CrosswordGridSquare(props: Props) {
     onSelect,
     onUpdateSquare,
     isSelectedSquare,
+    isSelectedClue,
     rowIndex,
     colIndex,
     numSquares,
@@ -63,6 +65,8 @@ export default function CrosswordGridSquare(props: Props) {
       return theme.colors.squareBlocked;
     } else if (isSelectedSquare) {
       return theme.colors.squareSelected;
+    } else if (isSelectedClue) {
+      return theme.colors.clueSelected;
     }
     return "unset";
   };

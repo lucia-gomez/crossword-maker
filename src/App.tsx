@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import CrosswordGrid from "./components/CrosswordGrid";
-import { ClueData, GridData } from "./types/types";
+import { ClueData, GridData, SquareToCluesData } from "./types/types";
 import numberAndClueGrid from "./util/numberGrid";
+import { buildSquaresToCluesMap } from "./util/squareToClues";
 
 function getEmptyGrid(size: number): GridData {
   const contents: GridData = Array.from(Array(size)).map((_) =>
@@ -30,11 +31,13 @@ function getEmptyGrid(size: number): GridData {
 function App() {
   const [contents, setContents] = useState<GridData>(getEmptyGrid(15));
   const [clues, setClues] = useState<ClueData>({});
+  const [squareToClues, setSquareToClues] = useState<SquareToCluesData>({});
 
   useEffect(() => {
     const [newContents, newClues] = numberAndClueGrid(contents);
     setContents(newContents);
     setClues(newClues);
+    setSquareToClues(buildSquaresToCluesMap(newClues));
   }, [contents]);
 
   const onUpdateSquare = (r: number, c: number, content: string | null) => {
@@ -44,13 +47,14 @@ function App() {
       const [newContents, newClues] = numberAndClueGrid(copy);
       setContents(newContents);
       setClues(newClues);
+      setSquareToClues(buildSquaresToCluesMap(newClues));
     } else {
       setContents(copy);
     }
   };
 
   return (
-    <CrosswordGrid contents={contents} clues={clues} {...{ onUpdateSquare }} />
+    <CrosswordGrid {...{ contents, clues, squareToClues, onUpdateSquare }} />
   );
 }
 
