@@ -1,4 +1,4 @@
-import { GridData, SquareData } from "../types/types";
+import { ClueData, GridData, SquareData } from "../types/types";
 
 function getClueStart(squares: SquareData[]): number {
   // indices of blocked squares, or -1 for edge
@@ -24,24 +24,65 @@ function clearNumbers(contents: GridData) {
   return contents;
 }
 
-export default function numberGrid(contents: GridData): GridData {
+function handleAcross(
+  contents: GridData,
+  clues: ClueData,
+  r: number,
+  c: number,
+  counter: number
+): [GridData, ClueData] {
+  // number it if it's an across clue start
+  const acrossStart = getClueStartLeft(contents, r, c);
+  if (acrossStart === c) {
+    clues[`${counter}-across`] = [];
+    contents[r][c].number = counter;
+  }
+
+  // add current square to across clue
+  const acrossClue = contents[r][acrossStart].number! + "-across";
+  clues[acrossClue].push([r, c]);
+
+  return [contents, clues];
+}
+
+function handleDown(
+  contents: GridData,
+  clues: ClueData,
+  r: number,
+  c: number,
+  counter: number
+): [GridData, ClueData] {
+  // number it if it's an unnumbered down clue start
+  const downStart = getClueStartTop(contents, r, c);
+  if (downStart === r) {
+    clues[`${counter}-down`] = [];
+    contents[r][c].number ??= counter;
+  }
+
+  // add current square to down clue
+  const downClue = contents[downStart][c].number! + "-down";
+  clues[downClue].push([r, c]);
+
+  return [contents, clues];
+}
+
+export default function numberAndClueGrid(
+  contentsIn: GridData
+): [GridData, ClueData] {
   let counter = 1;
-  clearNumbers(contents).forEach((row, r) =>
-    row.forEach((square, c) => {
-      if (square.content === null) return;
+  let clues: ClueData = {};
+  let contents = clearNumbers(contentsIn);
+  for (let r = 0; r < contents.length; r++) {
+    for (let c = 0; c < contents[0].length; c++) {
+      const square = contents[r][c];
+      if (square.content === null) continue;
 
-      // number it if it's an across clue start
-      const acrossStart = getClueStartLeft(contents, r, c);
-      if (acrossStart === c) {
-        square.number = counter++;
-      }
+      [contents, clues] = handleAcross(contents, clues, r, c, counter);
+      [contents, clues] = handleDown(contents, clues, r, c, counter);
 
-      // number it if it's an unnumbered down clue start
-      const downStart = getClueStartTop(contents, r, c);
-      if (square.number === null && downStart === r) {
-        square.number = counter++;
-      }
-    })
-  );
-  return contents;
+      // increase counter if we numbered something
+      if (square.number !== null) counter++;
+    }
+  }
+  return [contents, clues];
 }

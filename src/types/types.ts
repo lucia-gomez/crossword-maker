@@ -5,3 +5,7 @@ export type SquareData = {
 };
 
 export type GridData = SquareData[][];
+
+export type ClueData = {
+  [key: string]: [number, number][];
+}

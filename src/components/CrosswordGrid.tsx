@@ -1,7 +1,6 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { SquareData } from "../types/types";
-import numberGrid from "../util/numberGrid";
+import { ClueData, GridData } from "../types/types";
 import CrosswordGridSquare from "./CrosswordGridSquare";
 
 interface GridStyleProps {
@@ -20,14 +19,17 @@ const Grid = styled.div<GridStyleProps>`
 `;
 
 interface Props {
-  contents: SquareData[][];
+  contents: GridData;
+  clues: ClueData;
+  onUpdateSquare: (r: number, c: number, content: string | null) => void;
 }
 
 export default function CrosswordGrid(props: Props) {
-  const [contents, setContents] = useState(numberGrid(props.contents));
+  const { contents, onUpdateSquare } = props;
+  const numSquares = contents.length;
+
   const [isHorizontal, setHorizontal] = useState(true);
   const [selectedIndex, setSelectedIndex] = useState<[number, number]>();
-  const numSquares = contents.length;
 
   const isSelectedSquare = (row: number, col: number): boolean => {
     if (selectedIndex === undefined) {
@@ -37,21 +39,14 @@ export default function CrosswordGrid(props: Props) {
   };
 
   const onSelectSquare = (row: number, col: number) => {
-    setSelectedIndex([row, col]);
-  };
-
-  const updateSquareContent = (
-    row: number,
-    col: number,
-    content: string | null
-  ) => {
-    let copy = [...contents];
-    copy[row][col].content = content;
-    if (content === null || contents[row][col] === null) {
-      setContents(numberGrid(copy));
-    } else {
-      setContents(copy);
+    if (
+      selectedIndex !== undefined &&
+      selectedIndex[0] === row &&
+      selectedIndex[1] === col
+    ) {
+      setHorizontal(!isHorizontal);
     }
+    setSelectedIndex([row, col]);
   };
 
   return (
@@ -65,7 +60,7 @@ export default function CrosswordGrid(props: Props) {
             isSelectedSquare={isSelectedSquare(row, col)}
             onSelect={onSelectSquare}
             key={`${row} ${col}`}
-            {...{ numSquares, updateSquareContent }}
+            {...{ numSquares, onUpdateSquare }}
           />
         ))
       )}

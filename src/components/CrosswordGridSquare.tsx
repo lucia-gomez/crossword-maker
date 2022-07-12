@@ -43,18 +43,14 @@ interface Props {
   colIndex: number;
   isSelectedSquare: boolean;
   onSelect: (row: number, col: number) => void;
-  updateSquareContent: (
-    row: number,
-    col: number,
-    content: string | null
-  ) => void;
+  onUpdateSquare: (row: number, col: number, content: string | null) => void;
 }
 
 export default function CrosswordGridSquare(props: Props) {
   const {
     squareData,
     onSelect,
-    updateSquareContent,
+    onUpdateSquare,
     isSelectedSquare,
     rowIndex,
     colIndex,
@@ -79,7 +75,7 @@ export default function CrosswordGridSquare(props: Props) {
 
   const onDoubleClickSquare = () => {
     const newContent = squareData.content === null ? "" : null;
-    updateSquareContent(rowIndex, colIndex, newContent);
+    onUpdateSquare(rowIndex, colIndex, newContent);
   };
 
   return (
