@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { ClueData, GridData, SquareToCluesData } from "../types/types";
 import { getSquareToClues } from "../util/squareToClues";
@@ -25,6 +25,10 @@ interface Props {
   squareToClues: SquareToCluesData;
   onUpdateSquare: (r: number, c: number, content: string | null) => void;
 }
+
+const isValidChar = (code: number): boolean => {
+  return (code >= 65 && code <= 90) || (code >= 97 && code <= 122);
+};
 
 export default function CrosswordGrid(props: Props) {
   const { contents, clues, squareToClues, onUpdateSquare } = props;
@@ -64,9 +68,64 @@ export default function CrosswordGrid(props: Props) {
     if (selectedIndex !== undefined) {
       const squareClues = getSquareToClues(squareToClues, selectedIndex);
       const clueKey = isHorizontal ? squareClues[0] : squareClues[1];
-      setSelectedClueIndices(clues[clueKey]);
+      setSelectedClueIndices(clues[clueKey] ?? []);
     }
   }, [clues, selectedIndex, isHorizontal, squareToClues]);
+
+  const getAfterSquare = useCallback(
+    (n: number) => (n < numSquares - 1 ? n + 1 : n),
+    [numSquares]
+  );
+
+  const getBeforeSquare = useCallback((n: number) => (n > 0 ? n - 1 : 0), []);
+
+  const onAddLetter = useCallback(
+    (key: string) => {
+      if (selectedIndex === undefined) return;
+      const [r, c] = selectedIndex;
+
+      onUpdateSquare(r, c, key);
+      const cursor: [number, number] = isHorizontal
+        ? [r, getAfterSquare(c)]
+        : [getAfterSquare(r), c];
+      if (contents[cursor[0]][cursor[1]].content !== null) {
+        setSelectedIndex(cursor);
+      }
+    },
+    [isHorizontal, onUpdateSquare, selectedIndex, contents, getAfterSquare]
+  );
+
+  // if current is full, delete and stay there
+  // if current is empty, delete previous and go there
+  const onDeleteLetter = useCallback(() => {
+    if (selectedIndex === undefined) return;
+    const [r, c] = selectedIndex;
+    const currentContent = contents[r][c].content;
+
+    if (currentContent !== "") {
+      onUpdateSquare(r, c, "");
+    } else {
+      const cursor: [number, number] = isHorizontal
+        ? [r, getBeforeSquare(c)]
+        : [getBeforeSquare(r), c];
+      onUpdateSquare(cursor[0], cursor[1], "");
+      setSelectedIndex(cursor);
+    }
+  }, [isHorizontal, onUpdateSquare, selectedIndex, contents, getBeforeSquare]);
+
+  useEffect(() => {
+    const onKeyDown = (evt: KeyboardEvent) => {
+      if (isValidChar(evt.keyCode)) {
+        onAddLetter(evt.key.toUpperCase());
+      } else if (evt.keyCode === 8) {
+        onDeleteLetter();
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [onUpdateSquare, onAddLetter, onDeleteLetter]);
 
   return (
     <Grid {...{ numSquares }}>

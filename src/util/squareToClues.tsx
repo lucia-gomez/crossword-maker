@@ -21,9 +21,13 @@ export function getSquareToClues(
   indices: [number, number]
 ): string[] {
   const key = indicesToKey(indices);
-  return squaresToClues[key].sort((a, b) => {
-    const aSub = a.substring(a.indexOf("-"));
-    const bSub = b.substring(b.indexOf("-"));
-    return aSub === bSub ? 0 : aSub < bSub ? -1 : 1;
-  });
+  let clues = squaresToClues[key];
+  if (clues !== undefined) {
+    clues = clues.sort((a, b) => {
+      const aSub = a.substring(a.indexOf("-"));
+      const bSub = b.substring(b.indexOf("-"));
+      return aSub === bSub ? 0 : aSub < bSub ? -1 : 1;
+    });
+  }
+  return clues ?? [];
 }
