@@ -3,8 +3,8 @@ import styled from "styled-components";
 import ClueList from "./components/ClueList";
 import CrosswordGrid from "./components/CrosswordGrid";
 import { ClueData, GridData, SquareToCluesData } from "./types/types";
-import numberAndClueGrid from "./util/numberGrid";
-import { buildSquaresToCluesMap } from "./util/squareToClues";
+import numberAndClueGrid, { getFirstSquare } from "./util/numberGrid";
+import { buildSquaresToCluesMap, getSquareToClues } from "./util/squareToClues";
 
 const Layout = styled.div`
   @media only screen and (min-width: 576px) {
@@ -14,10 +14,6 @@ const Layout = styled.div`
 
   @media only screen and (min-width: 576px) {
   }
-
-  /* display: flex;
-  flex-direction: row;
-  flex-wrap: wrap; */
 `;
 
 function getEmptyGrid(size: number): GridData {
@@ -44,10 +40,20 @@ function getEmptyGrid(size: number): GridData {
   return contents;
 }
 
+function getFirstClueIsHorizontal(clues: ClueData): boolean {
+  return Object.keys(clues)[0]?.includes("across") ?? true;
+}
+
 function App() {
   const [contents, setContents] = useState<GridData>(getEmptyGrid(15));
   const [clues, setClues] = useState<ClueData>({});
   const [squareToClues, setSquareToClues] = useState<SquareToCluesData>({});
+  const [selectedIndex, setSelectedIndex] = useState<[number, number]>(
+    getFirstSquare(contents)
+  );
+  const [isHorizontal, setHorizontal] = useState(
+    getFirstClueIsHorizontal(clues)
+  );
 
   useEffect(() => {
     const [newContents, newClues] = numberAndClueGrid(contents);
@@ -69,10 +75,43 @@ function App() {
     }
   };
 
+  const onSelectClue = (clue: string) => {
+    setHorizontal(clue.includes("across"));
+    setSelectedIndex(clues[clue][0]);
+  };
+
+  const onSelectIndex = (indices: [number, number]) => {
+    const [row, col] = indices;
+    if (
+      selectedIndex !== undefined &&
+      selectedIndex[0] === row &&
+      selectedIndex[1] === col
+    ) {
+      setHorizontal(!isHorizontal);
+    }
+    setSelectedIndex(indices);
+  };
+
+  const getSelectedClue = (): string => {
+    const squareClues = getSquareToClues(squareToClues, selectedIndex);
+    return isHorizontal ? squareClues[0] : squareClues[1];
+  };
+
   return (
     <Layout>
-      <CrosswordGrid {...{ contents, clues, squareToClues, onUpdateSquare }} />
-      <ClueList {...{ clues }} />
+      <CrosswordGrid
+        selectedClue={getSelectedClue()}
+        {...{
+          contents,
+          clues,
+          squareToClues,
+          onUpdateSquare,
+          selectedIndex,
+          onSelectIndex,
+          isHorizontal,
+        }}
+      />
+      <ClueList selectedClue={getSelectedClue()} {...{ clues, onSelectClue }} />
     </Layout>
   );
 }

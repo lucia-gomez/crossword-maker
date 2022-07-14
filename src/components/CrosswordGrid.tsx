@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
-import { ClueData, GridData, SquareToCluesData } from "../types/types";
-import { getFirstSquare } from "../util/numberGrid";
-import { getSquareToClues } from "../util/squareToClues";
+import { ClueData, GridData } from "../types/types";
 import CrosswordGridSquare from "./CrosswordGridSquare";
 
 interface GridStyleProps {
@@ -23,8 +21,11 @@ const Grid = styled.div<GridStyleProps>`
 interface Props {
   contents: GridData;
   clues: ClueData;
-  squareToClues: SquareToCluesData;
+  selectedClue: string;
   onUpdateSquare: (r: number, c: number, content: string | null) => void;
+  selectedIndex: [number, number];
+  onSelectIndex: (indicies: [number, number]) => void;
+  isHorizontal: boolean;
 }
 
 const isValidChar = (code: number): boolean => {
@@ -32,13 +33,17 @@ const isValidChar = (code: number): boolean => {
 };
 
 export default function CrosswordGrid(props: Props) {
-  const { contents, clues, squareToClues, onUpdateSquare } = props;
+  const {
+    contents,
+    clues,
+    selectedClue,
+    onUpdateSquare,
+    selectedIndex,
+    onSelectIndex,
+    isHorizontal,
+  } = props;
   const numSquares = contents.length;
 
-  const [isHorizontal, setHorizontal] = useState(true);
-  const [selectedIndex, setSelectedIndex] = useState<[number, number]>(
-    getFirstSquare(contents)
-  );
   const [selectedClueIndices, setSelectedClueIndices] = useState<
     [number, number][]
   >([]);
@@ -57,23 +62,12 @@ export default function CrosswordGrid(props: Props) {
   };
 
   const onSelectSquare = (row: number, col: number) => {
-    if (
-      selectedIndex !== undefined &&
-      selectedIndex[0] === row &&
-      selectedIndex[1] === col
-    ) {
-      setHorizontal(!isHorizontal);
-    }
-    setSelectedIndex([row, col]);
+    onSelectIndex([row, col]);
   };
 
   useEffect(() => {
-    if (selectedIndex !== undefined) {
-      const squareClues = getSquareToClues(squareToClues, selectedIndex);
-      const clueKey = isHorizontal ? squareClues[0] : squareClues[1];
-      setSelectedClueIndices(clues[clueKey] ?? []);
-    }
-  }, [clues, selectedIndex, isHorizontal, squareToClues]);
+    setSelectedClueIndices(clues[selectedClue] ?? []);
+  }, [clues, selectedClue]);
 
   const getAfterSquare = useCallback(
     (n: number) => (n < numSquares - 1 ? n + 1 : n),
@@ -92,10 +86,17 @@ export default function CrosswordGrid(props: Props) {
         ? [r, getAfterSquare(c)]
         : [getAfterSquare(r), c];
       if (contents[cursor[0]][cursor[1]].content !== null) {
-        setSelectedIndex(cursor);
+        onSelectIndex(cursor);
       }
     },
-    [isHorizontal, onUpdateSquare, selectedIndex, contents, getAfterSquare]
+    [
+      isHorizontal,
+      onUpdateSquare,
+      selectedIndex,
+      onSelectIndex,
+      contents,
+      getAfterSquare,
+    ]
   );
 
   // if current is full, delete and stay there
@@ -112,9 +113,16 @@ export default function CrosswordGrid(props: Props) {
         ? [r, getBeforeSquare(c)]
         : [getBeforeSquare(r), c];
       onUpdateSquare(cursor[0], cursor[1], "");
-      setSelectedIndex(cursor);
+      onSelectIndex(cursor);
     }
-  }, [isHorizontal, onUpdateSquare, selectedIndex, contents, getBeforeSquare]);
+  }, [
+    isHorizontal,
+    onUpdateSquare,
+    selectedIndex,
+    onSelectIndex,
+    contents,
+    getBeforeSquare,
+  ]);
 
   useEffect(() => {
     const onKeyDown = (evt: KeyboardEvent) => {
