@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import styled, { useTheme } from "styled-components";
 import { SquareData } from "../types/types";
 
@@ -27,13 +28,30 @@ const Square = styled.div<SquareStyleProps>`
 
 const SquareNumber = styled.svg`
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 3%;
+  left: 3%;
 `;
 
 const SquareLetter = styled.svg`
   position: absolute;
   bottom: 0;
+`;
+
+const SquareInput = styled.input`
+  position: absolute;
+  top: 0;
+  background-color: unset;
+  color: transparent;
+  caret-color: transparent;
+  border: unset;
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  z-index: 1;
+
+  :focus {
+    outline: none;
+  }
 `;
 
 interface Props {
@@ -59,6 +77,7 @@ export default function CrosswordGridSquare(props: Props) {
     numSquares,
   } = props;
   const theme = useTheme();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const getBgColor = () => {
     if (squareData.content === null) {
@@ -82,6 +101,14 @@ export default function CrosswordGridSquare(props: Props) {
     onUpdateSquare(rowIndex, colIndex, newContent);
   };
 
+  useEffect(() => {
+    if (isSelectedSquare) {
+      inputRef.current?.focus();
+    } else {
+      inputRef.current?.blur();
+    }
+  }, [isSelectedSquare]);
+
   return (
     <Square
       bgColor={getBgColor()}
@@ -89,8 +116,9 @@ export default function CrosswordGridSquare(props: Props) {
       onDoubleClick={onDoubleClickSquare}
       {...{ numSquares }}
     >
+      <SquareInput ref={inputRef} />
       <SquareNumber viewBox="0 0 50 15" width="100%" height="30%">
-        <text x="2" y="2" dominantBaseline="hanging">
+        <text x="0" y="0" dominantBaseline="hanging">
           {squareData.number}
         </text>
       </SquareNumber>
