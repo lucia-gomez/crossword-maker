@@ -112,8 +112,10 @@ export default function CrosswordGrid(props: Props) {
       const cursor: [number, number] = isHorizontal
         ? [r, getBeforeSquare(c)]
         : [getBeforeSquare(r), c];
-      onUpdateSquare(cursor[0], cursor[1], "");
-      onSelectIndex(cursor);
+      if (contents[cursor[0]][cursor[1]].content !== null) {
+        onUpdateSquare(cursor[0], cursor[1], "");
+        onSelectIndex(cursor);
+      }
     }
   }, [
     isHorizontal,
