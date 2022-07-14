@@ -1,8 +1,24 @@
 import { useEffect, useState } from "react";
+import styled from "styled-components";
+import ClueList from "./components/ClueList";
 import CrosswordGrid from "./components/CrosswordGrid";
 import { ClueData, GridData, SquareToCluesData } from "./types/types";
 import numberAndClueGrid from "./util/numberGrid";
 import { buildSquaresToCluesMap } from "./util/squareToClues";
+
+const Layout = styled.div`
+  @media only screen and (min-width: 576px) {
+    display: grid;
+    grid-template-columns: 93vmin 1fr;
+  }
+
+  @media only screen and (min-width: 576px) {
+  }
+
+  /* display: flex;
+  flex-direction: row;
+  flex-wrap: wrap; */
+`;
 
 function getEmptyGrid(size: number): GridData {
   const contents: GridData = Array.from(Array(size)).map((_) =>
@@ -54,7 +70,10 @@ function App() {
   };
 
   return (
-    <CrosswordGrid {...{ contents, clues, squareToClues, onUpdateSquare }} />
+    <Layout>
+      <CrosswordGrid {...{ contents, clues, squareToClues, onUpdateSquare }} />
+      <ClueList {...{ clues }} />
+    </Layout>
   );
 }
 
