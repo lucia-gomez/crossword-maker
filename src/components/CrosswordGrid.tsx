@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { ClueData, GridData, SquareToCluesData } from "../types/types";
+import { getFirstSquare } from "../util/numberGrid";
 import { getSquareToClues } from "../util/squareToClues";
 import CrosswordGridSquare from "./CrosswordGridSquare";
 
@@ -35,7 +36,9 @@ export default function CrosswordGrid(props: Props) {
   const numSquares = contents.length;
 
   const [isHorizontal, setHorizontal] = useState(true);
-  const [selectedIndex, setSelectedIndex] = useState<[number, number]>();
+  const [selectedIndex, setSelectedIndex] = useState<[number, number]>(
+    getFirstSquare(contents)
+  );
   const [selectedClueIndices, setSelectedClueIndices] = useState<
     [number, number][]
   >([]);

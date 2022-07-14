@@ -86,3 +86,14 @@ export default function numberAndClueGrid(
   }
   return [contents, clues];
 }
+
+export function getFirstSquare(contents: GridData): [number, number] {
+  for(let r = 0; r < contents.length; r++) {
+    for(let c = 0; c < contents[0].length; c++) {
+      if (contents[r][c] !== null) {
+        return [r, c];
+      }
+    }
+  }
+  return [-1, -1];
+}
