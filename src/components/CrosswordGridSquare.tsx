@@ -24,6 +24,10 @@ const Square = styled.div<SquareStyleProps>`
   :nth-child(n + ${numberOfFirstCellLastRow}) {
     box-shadow: inset -1px 0px ${(props) => props.theme.colors.squareBorder};
   }
+
+  :nth-child(${(props) => props.numSquares * props.numSquares}) {
+    box-shadow: none;
+  }
 `;
 
 const SquareNumber = styled.svg`
@@ -116,7 +120,7 @@ export default function CrosswordGridSquare(props: Props) {
       onDoubleClick={onDoubleClickSquare}
       {...{ numSquares }}
     >
-      <SquareInput ref={inputRef} />
+      <SquareInput ref={inputRef} spellCheck="false" />
       <SquareNumber viewBox="0 0 50 15" width="100%" height="30%">
         <text x="0" y="0" dominantBaseline="hanging">
           {squareData.number}
